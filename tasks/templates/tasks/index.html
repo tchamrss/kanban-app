@@ -1,0 +1,189 @@
+
+{% extends "base.html" %} {% block content %}
+
+
+<script>
+      
+    // When the user clicks the button, open the modal 
+    function openModal(){
+        let modal = document.getElementById("myModal");
+        modal.style.display = "block";
+    }
+    
+    // When the user clicks on <span> (x), close the modal
+    function closeModal(){
+        let modal = document.getElementById("myModal");
+        modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        let modal = document.getElementById("myModal");
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    async function addTask(){
+        let fd = new FormData();
+        let token = '{{ csrf_token }}';
+        fd.append('title',  titleField.value);
+        fd.append('priority',  priorityField.value);
+        fd.append('description',  descriptionField.value);
+        fd.append('dueDate',  dueDateField.value);
+        fd.append('csrfmiddlewaretoken',  token);
+        closeModal();
+        try {   
+            tasksContainer.innerHTML +=`
+
+                <div class="doneTask_1" id="deleteMessage">
+                    <div class="doneTaskCard-child color-gray" >
+                        <div class="doneTaskCard">
+                            <div class="taskCard-title">
+                                <div class="taskCard-description">
+                                    <span class="taskCard-description-title">${ titleField.value}</span>
+                                    <span class="taskCard-description-text">${ descriptionField.value}</span>
+                                </div>                        
+                                <div class="abbreviations">                               
+                                    Due date: ${ dueDateField.value}
+                                </div>
+                                <div class="taskPriority" >                                 
+                                    Priority: ${ priorityField.value} 
+                                </div>                                               
+                            </div>
+                        </div>               
+                    </div>           
+                </div>
+
+                `;
+                let response = await fetch('/tasks/',{
+                method: 'POST',
+                body: fd
+                });
+                console.log('hier bin ich1', response);
+                let responseAsJson = await response.json();
+                //let responseAsJson = await JSON.stringify(response);// response.json();
+                console.log('json is',responseAsJson);
+                responseAsJsonParse = JSON.parse(responseAsJson);
+                console.log('parse json is',responseAsJsonParse);
+                document.getElementById('deleteMessage').remove();
+                tasksContainer.innerHTML +=`
+                <div class="doneTask_1">
+                    <div class="doneTaskCard-child" >
+                        <div class="doneTaskCard">
+                            <div class="taskCard-title">
+                                <div class="taskCard-description">
+                                    <span class="taskCard-description-title">${responseAsJsonParse['fields'].title}</span>
+                                    <span class="taskCard-description-text">${responseAsJsonParse['fields'].description}</span>
+                                </div>                        
+                                <div class="abbreviations">                               
+                                    Due date: ${responseAsJsonParse['fields'].due_date}
+                                </div>
+                                <div class="taskPriority">                                  
+                                    Priority: ${responseAsJsonParse['fields'].priority}
+                                </div>                                               
+                            </div>
+                        </div>               
+                    </div>           
+                </div>
+
+                `;
+                console.log('success!!');
+                descriptionField.value ='';
+                titleField.value ='';
+                dueDateField.value ='';
+                priorityField.value ='';
+                
+               
+        }catch(e){
+            
+            console.error(e)
+
+        }
+
+    }
+</script>
+
+        {% if request.user.is_authenticated %}
+        <div class="main-content" id="tasksContainer">
+            {% for task in tasks %}
+            <div class="doneTask_1" >
+                <div class="doneTaskCard-child" >
+                    <div class="doneTaskCard">
+                        <div class="taskCard-title">
+                            <div class="taskCard-description">
+                                <span class="taskCard-description-title">{{ task.title }}</span>
+                                <span class="taskCard-description-text">{{ task.description }}</span>
+                            </div>                        
+                            <div class="abbreviations">                               
+                                Due date: {{ task.due_date }} 
+                            </div>
+                            <div class="taskPriority">                                   
+                                Priority: {{ task.priority }} 
+                            </div>                                               
+                        </div>
+                    </div>               
+                </div>           
+            </div>
+            {% endfor %} 
+        </div>
+
+        <!-- Colored FAB button with ripple -->
+        <button id="myBtn" onclick = "openModal()" class="mdl-button add-btn mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+            <i class="material-icons">add</i>
+        </button>
+       
+
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+
+                {% comment %} <form onsubmit = "sendMessage(); return false;" method="post"> {% endcomment %}
+                <form  onsubmit = "addTask(); return false;" method="post"> {% comment %} onsubmit = "addTask(); return false;" {% endcomment %}
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <span onclick = "closeModal()" class="close">&times;</span>
+                        <h2>Create task</h2>
+                    </div>
+                    <div class="form-content">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" name="title" type="text" id="titleField">
+                            <label class="mdl-textfield__label" for="titleField">Title...</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" name="description" type="text" id="descriptionField">
+                            <label class="mdl-textfield__label" for="descriptionField">Description...</label>
+                        </div>
+                        <div>   
+                            <label for="dueDateField">Due date:</label>
+                            <input type="date" id="dueDateField" name="dueDate">
+                            
+                        </div>
+                        <div>
+                            <label for="cars">Choose the priority:</label>
+                            <select name="priority" id="priorityField">
+                                <option value="low">Low</option>
+                                <option value="middle">Middle</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <!-- Accent-colored raised button with ripple -->
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                                send
+                        </button>
+                    </div>
+                </form>
+            </div>
+        
+        </div>  
+        {% else %}
+        <div>
+            <h1>Nicht eingeloggt</h1>
+            <p>Du bist aktuell nicht eingeloggt. Bitte logge dich ein. <br> Bitte klicke <a href="/login/"> hier</a>
+        </div>
+        
+        {% endif %}  
+        
+ {% endblock %}
