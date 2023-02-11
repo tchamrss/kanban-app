@@ -136,7 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
 MEDIA_ROOT = '/home/russell1985/kanban_app/media'
 MEDIA_URL = '/media/'
-STATIC_ROOT = '/home/russell1985/kanban_app/static'
+""" STATIC_ROOT = '/home/russell1985/kanban_app/static' """
 STATIC_URL = '/static/'
 
 DOCS_ROOT = os.path.join(BASE_DIR, 'docs/_build/html')
