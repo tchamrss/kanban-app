@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
+import collections
+collections.Callable = collections.abc.Callable
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'tasks',
     'docs',
+    'django_nose',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +144,4 @@ STATIC_URL = '/static/'
 
 DOCS_ROOT = os.path.join(BASE_DIR, 'docs/_build/html')
 DOCS_ACCESS = 'public'
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
