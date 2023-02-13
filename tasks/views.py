@@ -3,6 +3,9 @@ from time import strftime
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core import serializers
+from rest_framework import viewsets
+from rest_framework import permissions
+from .serializers import TaskSerializer
 from django.http.response import HttpResponseRedirect
 from django.contrib import messages
 from .forms import UserRegistrationForm
@@ -71,4 +74,22 @@ def logout_view(request):
         request (_type_): this function log the user out
     """
     logout(request)
-    return render(request, 'auth/logout.html')   
+    return render(request, 'auth/logout.html') 
+
+class TasksViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Tasks.objects.all().order_by('-created_at')
+    serializer_class = TaskSerializer
+    permission_classes = [] # permissions.IsAuthenticated
+    def create(self, request):
+        task = Tasks.objects.create(title= request.POST.get('title', ''), 
+                                  description= request.POST.get('description', ''),
+                                  due_date= request.POST.get('dueDate', ''),
+                                  priority= request.POST.get('priority', ''),
+                                  author= request.user,
+                                )
+        serialized_obj = serializers.serialize('json', [task, ]) 
+        return HttpResponse(serialized_obj, content_type='application/json')
+

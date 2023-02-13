@@ -15,6 +15,9 @@ from pathlib import Path
 import collections
 collections.Callable = collections.abc.Callable
 
+from django.conf.locale.es import formats as es_formats
+es_formats.DATE_FORMAT = 'y-m-d'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
