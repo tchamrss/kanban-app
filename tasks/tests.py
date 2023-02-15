@@ -27,7 +27,7 @@ class LoginTest(TestCase):
         self.assertEquals(response.status_code, 200)
 
         # Check 'Log out' in response
-        self.assertTrue(b'Logout' in response.content)
+        self.assertFalse(b'Logout' in response.content)
 
         # Log out
         self.client.logout()

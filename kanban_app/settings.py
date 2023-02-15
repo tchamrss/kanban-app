@@ -18,6 +18,7 @@ collections.Callable = collections.abc.Callable
 from django.conf.locale.es import formats as es_formats
 es_formats.DATE_FORMAT = 'y-m-d'
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -147,4 +148,12 @@ STATIC_URL = '/static/'
 
 DOCS_ROOT = os.path.join(BASE_DIR, 'docs/_build/html')
 DOCS_ACCESS = 'public'
+# Use nose to run all tests
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage on the 'foo' and 'bar' apps
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=kanban_app',
+    '--cover-html',
+]
