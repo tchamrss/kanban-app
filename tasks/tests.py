@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.test import Client
 from django.urls import reverse, resolve
 from django.contrib.auth.models import User
+from tasks.forms import UserRegistrationForm
 from .views import login_view, logout_view, register
 
 
@@ -15,6 +16,15 @@ class LoginTest(TestCase):
         self.client.login(username='test_user', password='test_user')        
         response = self.client.get('/tasks/')        
         self.assertEqual(response.status_code, 200)
+        
+    """ def test_get_api_json(self):
+        resp = self.api_client.get('/tasks/', format='json')
+        self.assertValidJSONResponse(resp) """
+    
+    """   def test_forms(self):
+        form_data = {'something': 'something'}
+        form = UserRegistrationForm(data=form_data)
+        self.assertFalse(form.is_valid()) """
        
     def test_Logout(self):        
         self.client = Client()
