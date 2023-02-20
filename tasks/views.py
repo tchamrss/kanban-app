@@ -1,11 +1,11 @@
 from ast import Return
-from time import strftime
+import datetime
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core import serializers
 from rest_framework import viewsets
-from rest_framework import permissions
-from .serializers import TaskSerializer
+from rest_framework import generics,permissions
+from .serializers import TaskSerializer, UserSerializer
 from django.http.response import HttpResponseRedirect
 from django.contrib import messages
 from .forms import UserRegistrationForm
@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from tasks.models import Tasks, tasks_board
 
+""" 
 def index(request):
     '''
         leads to the homepage. This page is called when the user is authentificated
@@ -28,7 +29,7 @@ def index(request):
         serialized_obj = serializers.serialize('json',[new_task])
         return JsonResponse(serialized_obj[1:-1], safe=False)        
     TasksCollections = Tasks.objects.filter(task_board__id=1)
-    return render(request, 'tasks/index.html', {'tasks': TasksCollections})
+    return render(request, 'tasks/index.html', {'tasks': TasksCollections}) """
 
 
 def login_view(request):
@@ -86,7 +87,7 @@ class TasksViewSet(viewsets.ModelViewSet):
     def create(self, request):
         task = Tasks.objects.create(title= request.POST.get('title', ''), 
                                   description= request.POST.get('description', ''),
-                                  due_date= request.POST.get('dueDate', ''),
+                                  due_date = datetime.datetime.strptime(request.POST.get('due_date', ''), "%Y-%m-%d").date(),
                                   priority= request.POST.get('priority', ''),
                                   author= request.user,
                                 )
